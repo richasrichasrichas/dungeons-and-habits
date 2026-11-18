@@ -1,0 +1,33 @@
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: dungeons_and_habits
+      POSTGRES_USER: dah
+      POSTGRES_PASSWORD: dah_local_only
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./migrations/001_init.sql:/docker-entrypoint-initdb.d/001_init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dah -d dungeons_and_habits"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build: .
+    environment:
+      DATABASE_URL: postgres://dah:dah_local_only@db:5432/dungeons_and_habits?sslmode=disable
+      PORT: "8080"
+      DB_MAX_CONNS: "20"
+      DB_MIN_CONNS: "1"
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:

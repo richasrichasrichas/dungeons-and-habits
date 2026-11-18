@@ -1,0 +1,14 @@
+.git
+.vscode
+*.md
+*.zip
+tmp/
+bin/
+# iOS app files and design assets are not needed in the Go container build.
+src/
+assets/
+*.swift
+Info.plist.example
+DungeonsAndHabitsApp.swift
+project.yaml
+.github/
